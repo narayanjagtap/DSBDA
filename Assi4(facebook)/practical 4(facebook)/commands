@@ -1,0 +1,45 @@
+pip install pandas
+
+
+pip install numpy
+
+import pandas as pd
+import numpy as np
+
+df=pd.read_csv("dataset_Facebook1.csv")
+
+df.head()
+
+df.info()
+
+df.isnull()
+
+df.dropna(how='any',axis=0)
+
+df1=df.loc[1:245,['Category','Lifetime_Post_Total_Reach','Type','Total_Interactions']]
+
+df2=df.loc[245:500,['Post_Month','Post_Weekday','Post_Hour','Lifetime_Post_Consumers']]
+
+df1
+
+df2
+
+df_row = pd.concat([df1, df2])
+
+df_row
+
+df.shape
+
+df.melt()
+
+df.transpose()
+
+df1.transpose()
+
+df2.transpose()
+
+df.sort_values(by='Category')
+
+df.sort_index()
+
+

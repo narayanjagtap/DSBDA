@@ -1,0 +1,102 @@
+//If hive not open then we need to change the metastore_db file name to metastore_db_bkp
+//Run the following commands to install derby database
+schematool -initSchema -dbType derby
+
+
+//Create Database flights_data
+
+create database flight_data;
+
+//Create table flights
+
+create table flights(
+flight_date DATE,
+airline_code INT,
+carrier_code STRING,
+origin STRING,
+dest STRING,
+depart_time INT,
+depart_delta INT,
+depart_delay INT,
+arrive_time INT,
+arrive_delta INT,
+arrive_delay INT,
+is_cancelled BOOLEAN,
+cancellation_code STRING,
+distance INT,
+carrier_delay INT,
+weather_delay INT,
+nas_delay INT,
+security_delay INT,
+late_aircraft_delay INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE;
+
+//Create table airlines
+
+create table airlines(
+code INT,
+description STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE;
+
+//Create table carriers
+
+create table carriers(
+code INT,
+description STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE;
+
+//Create table cancellation_reasons
+
+create table cancellation_reasons(
+code INT,
+description STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE;
+
+//Load the dataset files
+
+LOAD DATA LOCAL INPATH
+'${env:HOME}/flight_data/ontime_flights.tsv'
+OVERWRITE INTO TABLE flights;
+
+LOAD DATA LOCAL INPATH
+'${env:HOME}/flight_data/airlines.tsv'
+OVERWRITE INTO TABLE airlines;
+
+LOAD DATA LOCAL INPATH
+'${env:HOME}/flight_data/carriers.tsv'
+OVERWRITE INTO TABLE carriers;
+
+
+LOAD DATA LOCAL INPATH
+'${env:HOME}/flight_data/cancellation_reasons.tsv'
+OVERWRITE INTO TABLE cancellation_reasons;
+
+//Perform join operations
+select 
+a.description,
+AVG(f.depart_delay)
+FROM airlines a
+JOIN flights f ON a.code = f.airline_code
+GROUP BY a.description;
+
+
+select 
+c.description,
+AVG(f.depart_delay)
+FROM carriers c
+JOIN flights f ON c.code = f.carrier_code
+GROUP BY c.description;
+
+
